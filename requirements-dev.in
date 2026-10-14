@@ -1,0 +1,11 @@
+# Developer-machine tooling (direct requirements only). The constraint line keeps
+# the dev environment on the exact same asyncua/awscrt versions as the image.
+# Edit this file, then regenerate the hashed lock file from the repo root with:
+#   uv pip compile --universal --generate-hashes --python-version 3.10 requirements-dev.in -o requirements-dev.txt
+-c docker/requirements.txt
+boto3==1.35.91
+PyYAML==6.0.2
+pylint==3.3.3
+pytest==9.1.1
+pytest-cov==7.1.0
+pytest-mock==3.15.1

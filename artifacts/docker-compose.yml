@@ -1,0 +1,39 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+services:
+  simulator:
+    container_name: opcua-data-sim
+    # REQUIRED: replace <ACCOUNT_ID> and <REGION> with the image URI you pushed
+    # using docker/build_image.sh (the script prints the exact URI to paste here).
+    # build_component.py (run by publish_component.py) reads this value and
+    # writes it into the component recipe.
+    image: "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/opcua-data-sim:latest"
+    command: ["/app/config.json"]
+    # Bridge network with the OPC UA port published: SiteWise Edge (or any other
+    # client on the same host) reaches the server at opc.tcp://localhost:4840.
+    ports:
+      - "4840:4840"
+    environment:
+      - AWS_IOT_THING_NAME=${AWS_IOT_THING_NAME:-local}
+      # Both are provided by the Greengrass Nucleus to the recipe lifecycle
+      # script and exported there; they let the container use the IPC MQTT proxy.
+      - SVCUID=${SVCUID}
+      - AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT=${AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:-/greengrass/v2/ipc.socket}
+    volumes:
+      # Component config (bundled as a Greengrass artifact)
+      - ./config.json:/app/config.json:ro
+      # Greengrass IPC Unix socket, mounted at the same path inside the container
+      # so the env var above stays valid. The Nucleus makes the socket world
+      # read/write, so the non-root container user can connect without UID matching.
+      - ${AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:-/greengrass/v2/ipc.socket}:${AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:-/greengrass/v2/ipc.socket}
+    # The simulator needs no Linux capabilities (unprivileged port, no raw sockets).
+    cap_drop:
+      - ALL
+    # Block setuid/setgid privilege escalation inside the container.
+    security_opt:
+      - "no-new-privileges:true"
+    # Immutable root filesystem; the app only reads /app and writes nothing.
+    read_only: true
+    # Writable scratch space for the Python runtime (read_only hides /tmp).
+    tmpfs:
+      - "/tmp"

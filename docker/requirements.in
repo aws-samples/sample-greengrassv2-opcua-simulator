@@ -1,0 +1,5 @@
+# Simulator application dependencies (direct requirements only).
+# Edit this file, then regenerate the hashed lock file from the repo root with:
+#   uv pip compile --universal --generate-hashes --python-version 3.10 docker/requirements.in -o docker/requirements.txt
+asyncua==2.0.1
+awsiotsdk==1.31.0

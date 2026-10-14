@@ -1,0 +1,16 @@
+{
+  "endpoint": "opc.tcp://0.0.0.0:4840/simulator/",
+  "updateIntervalSeconds": 1.0,
+  "timeAcceleration": 60,
+  "devices": [
+    {
+      "name": "Motor01",
+      "tags": [
+        {"name": "Temperature", "type": "double", "pattern": "sine", "base": 165.0, "amplitude": 10.0, "noise": 1.5},
+        {"name": "Current", "type": "double", "pattern": "steady", "base": 45.0, "noise": 3.0},
+        {"name": "Vibration", "type": "double", "pattern": "steady", "base": 2.8, "noise": 0.4},
+        {"name": "Running", "type": "boolean", "pattern": "duty_cycle", "onProbability": 0.95}
+      ]
+    }
+  ]
+}

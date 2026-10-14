@@ -1,0 +1,31 @@
+*.pem
+*.crt
+*.key
+__pycache__
+.coverage
+htmlcov
+.vscode
+junit.xml
+.venv
+*.tar
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python test/build caches
+.pytest_cache
+*.egg-info
+build/
+dist/
+
+# Security scan output (ASH)
+.ash/
+# Local secrets and certificate bundles
+.env
+*.p12
+*.pfx
+# Local agent planning artifacts and ProtoShield scan output
+.agents/
+.protoshield/

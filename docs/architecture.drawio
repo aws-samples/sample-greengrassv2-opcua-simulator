@@ -1,0 +1,199 @@
+<?xml version="1.0" ?>
+<mxfile host="app.diagrams.net" type="device" compressed="false">
+  <diagram id="opcua-sim-architecture" name="Architecture">
+    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1769" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="dev" value="Developer machine &amp;nbsp;(AWS CLI, Docker buildx, Python &amp;ge; 3.10, pip3 install -r requirements.txt)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=4;fontSize=13;fontStyle=1;fontColor=#232F3E;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="30" y="30" width="1330" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend" value="Legend" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=4;fontSize=13;fontStyle=1;fontColor=#232F3E;fillColor=#FFFFFF;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1390" y="30" width="340" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="cloud" value="AWS cloud &amp;mdash; one region (component.json region, e.g. us-east-1)" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=13;fontStyle=1;container=0;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;verticalAlign=top;align=left;spacingLeft=30;spacingTop=2;fontColor=#232F3E;dashed=0;grIcon=mxgraph.aws4.group_aws_cloud_alt;strokeColor=#232F3E;fillColor=none;spacingLeft=165;" vertex="1" parent="1">
+          <mxGeometry x="30" y="230" width="1700" height="190" as="geometry"/>
+        </mxCell>
+        <mxCell id="core" value="Greengrass core device &amp;mdash; EC2 or any Linux host with Docker (Nucleus &amp;ge; 2.12)" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=13;fontStyle=1;container=0;pointerEvents=0;collapsible=0;recursiveResize=0;shape=mxgraph.aws4.group;verticalAlign=top;align=left;spacingLeft=30;spacingTop=2;fontColor=#232F3E;dashed=0;grIcon=mxgraph.aws4.group_ec2_instance_contents;strokeColor=#D86613;fillColor=none;spacingLeft=165;" vertex="1" parent="1">
+          <mxGeometry x="30" y="500" width="1700" height="400" as="geometry"/>
+        </mxCell>
+        <mxCell id="build" value="&lt;b&gt;docker/build_image.sh&lt;/b&gt;&lt;br&gt;builds the multi-arch image&lt;br&gt;(linux/amd64 + linux/arm64) and pushes it" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#FFFFFF;strokeColor=#1F5AA6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="75" width="230" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="publish" value="&lt;b&gt;python3 publish_component.py&lt;/b&gt;&lt;br&gt;zips recipe + artifacts/, uploads to S3,&lt;br&gt;creates the component version" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#FFFFFF;strokeColor=#1F5AA6;" vertex="1" parent="1">
+          <mxGeometry x="390" y="75" width="250" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="deploy" value="&lt;b&gt;python3 deploy_component_version.py 1.0.0 &amp;lt;thing&amp;gt;&lt;/b&gt;&lt;br&gt;revises the core device's existing deployment,&lt;br&gt;adds Docker application manager + Token exchange service" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#FFFFFF;strokeColor=#1F5AA6;" vertex="1" parent="1">
+          <mxGeometry x="655" y="75" width="300" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="control" value="&lt;b&gt;aws iot-data publish&lt;/b&gt; or IoT console MQTT test client&lt;br&gt;--topic simulator/&amp;lt;thing&amp;gt;/control&lt;br&gt;--payload '{&amp;quot;action&amp;quot;:&amp;quot;pause&amp;quot;}'" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#FFFFFF;strokeColor=#E65100;" vertex="1" parent="1">
+          <mxGeometry x="990" y="75" width="260" height="75" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg1" value="" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#1F5AA6;dashed=1;dashPattern=8 4;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1405" y="75" as="sourcePoint"/>
+            <mxPoint x="1465" y="75" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lg1_text" value="Provisioning: build, publish, deploy" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#232F3E;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1475" y="61" width="230" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg2" value="" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#2E7D32;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1405" y="110" as="sourcePoint"/>
+            <mxPoint x="1465" y="110" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lg2_text" value="Data path: OPC UA &amp;rarr; SiteWise Edge &amp;rarr; SiteWise" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#232F3E;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1475" y="96" width="230" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="lg3" value="" style="endArrow=block;endFill=1;html=1;strokeWidth=2;strokeColor=#E65100;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="1405" y="145" as="sourcePoint"/>
+            <mxPoint x="1465" y="145" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="lg3_text" value="Control path: IoT Core MQTT &amp;harr; Nucleus IPC" style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#232F3E;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1475" y="131" width="230" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="ecr" value="&lt;b&gt;Amazon ECR&lt;/b&gt;&lt;br&gt;repository opcua-data-sim&lt;br&gt;image opcua-data-sim:latest" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontColor=#232F3E;fillColor=#ED7100;gradientColor=#F78E04;gradientDirection=north;strokeColor=#ffffff;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecr;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="130" y="290" width="78" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="s3" value="&lt;b&gt;Amazon S3&lt;/b&gt; artifact bucket&lt;br&gt;opcua-data-sim-samples-&lt;br&gt;&amp;lt;region&amp;gt;-&amp;lt;account&amp;gt;&lt;br&gt;opcua-data-sim.zip" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontColor=#232F3E;fillColor=#7AA116;gradientColor=#4CB24A;gradientDirection=north;strokeColor=#ffffff;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.s3;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="400" y="290" width="78" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="gg" value="&lt;b&gt;AWS IoT Greengrass&lt;/b&gt;&lt;br&gt;com.amazon.samples.OpcUaDataSim&lt;br&gt;version 1.0.0&lt;br&gt;deployment for the core thing" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontColor=#232F3E;fillColor=#7AA116;gradientColor=#4CB24A;gradientDirection=north;strokeColor=#ffffff;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.iot_greengrass;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="740" y="290" width="78" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="iotcore" value="&lt;b&gt;AWS IoT Core&lt;/b&gt;&lt;br&gt;MQTT topics&lt;br&gt;simulator/&amp;lt;thing&amp;gt;/control&lt;br&gt;simulator/&amp;lt;thing&amp;gt;/status" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontColor=#232F3E;fillColor=#7AA116;gradientColor=#4CB24A;gradientDirection=north;strokeColor=#ffffff;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.iot_core;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="290" width="78" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="sitewise" value="&lt;b&gt;AWS IoT SiteWise&lt;/b&gt;&lt;br&gt;data streams /opcua-sim/&amp;lt;device&amp;gt;/&amp;lt;tag&amp;gt;&lt;br&gt;(optional asset model + asset)" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontColor=#232F3E;fillColor=#7AA116;gradientColor=#4CB24A;gradientDirection=north;strokeColor=#ffffff;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.iot_sitewise;labelPosition=center;verticalLabelPosition=top;align=center;verticalAlign=bottom;" vertex="1" parent="1">
+          <mxGeometry x="1556" y="290" width="78" height="78" as="geometry"/>
+        </mxCell>
+        <mxCell id="simgroup" value="com.amazon.samples.OpcUaDataSim component&lt;br&gt;(recipe runs docker compose up)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=4;fontSize=13;fontStyle=1;fontColor=#232F3E;fontSize=12;fillColor=#FFFFFF;strokeColor=#232F3E;dashed=1;spacingLeft=80;" vertex="1" parent="1">
+          <mxGeometry x="100" y="560" width="460" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="docker" value="&lt;b&gt;Docker container opcua-data-sim&lt;/b&gt;&lt;br&gt;OPC UA server opc.tcp://0.0.0.0:4840/simulator/ &amp;mdash; port 4840 published&lt;br&gt;/app/config.json: Motor01 &amp;rarr; Temperature, Current, Vibration, Running&lt;br&gt;non-root UID 1000 &amp;middot; read-only rootfs &amp;middot; cap_drop ALL &amp;middot; no-new-privileges&lt;br&gt;IPC client with the SVCUID token &amp;mdash; no device certificate in the container" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#E3F2FD;strokeColor=#1F5AA6;" vertex="1" parent="1">
+          <mxGeometry x="120" y="600" width="420" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="nucleus" value="&lt;b&gt;Greengrass Nucleus&lt;/b&gt;&lt;br&gt;IPC MQTT proxy (ipc.socket)&lt;br&gt;owns the IoT Core connection&lt;br&gt;+ Docker application manager,&lt;br&gt;&amp;nbsp;&amp;nbsp; Token exchange service" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#E8F5E9;strokeColor=#7AA116;" vertex="1" parent="1">
+          <mxGeometry x="700" y="560" width="240" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="swegroup" value="AWS IoT SiteWise Edge &amp;mdash; V3 gateway components (co-located on the same core in the default setup)" style="rounded=1;whiteSpace=wrap;html=1;verticalAlign=top;align=left;spacingLeft=12;spacingTop=4;fontSize=13;fontStyle=1;fontColor=#232F3E;fontSize=12;fillColor=#FFFFFF;strokeColor=#232F3E;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="970" y="560" width="740" height="200" as="geometry"/>
+        </mxCell>
+        <mxCell id="collector" value="&lt;b&gt;OPC UA collector&lt;/b&gt;&lt;br&gt;aws.iot.SiteWiseEdgeCollectorOpcua&lt;br&gt;source opcua-sim, prefix /opcua-sim" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="990" y="680" width="200" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="emqx" value="&lt;b&gt;EMQX broker&lt;/b&gt;&lt;br&gt;aws.greengrass.clientdevices.mqtt.EMQX&lt;br&gt;127.0.0.1:1883" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="680" width="220" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="publisher" value="&lt;b&gt;Publisher&lt;/b&gt;&lt;br&gt;aws.iot.SiteWiseEdgePublisher&lt;br&gt;SITEWISE_REALTIME destination" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#E8F5E9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="1500" y="680" width="190" height="60" as="geometry"/>
+        </mxCell>
+        <mxCell id="iamnote" value="&lt;b&gt;Core device role&lt;/b&gt; (temporary credentials via the Token exchange service; nothing is stored in the container)&lt;br&gt;ECR pull: ecr:GetAuthorizationToken, ecr:BatchGetImage, ecr:GetDownloadUrlForLayer, ecr:BatchCheckLayerAvailability (repository opcua-data-sim)&lt;br&gt;S3: s3:GetObject on opcua-data-sim-samples-&amp;lt;region&amp;gt;-&amp;lt;account&amp;gt;/*&lt;br&gt;If SiteWise Edge runs on this core: iotsitewise:BatchPutAssetPropertyValue on time-series/*, condition propertyAlias /opcua-sim/*" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fontColor=#232F3E;align=left;spacingLeft=6;spacingRight=4;fillColor=#FFEBEE;strokeColor=#DD344C;spacingLeft=70;" vertex="1" parent="1">
+          <mxGeometry x="100" y="790" width="900" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="iamicon" value="" style="outlineConnect=0;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontColor=#232F3E;fillColor=#DD344C;gradientColor=#F54749;gradientDirection=north;strokeColor=#ffffff;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.identity_and_access_management;" vertex="1" parent="1">
+          <mxGeometry x="112" y="811" width="48" height="48" as="geometry"/>
+        </mxCell>
+        <mxCell id="p1" value="docker buildx build --push" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1F5AA6;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="build" target="ecr">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p2" value="upload zip" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1F5AA6;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.2;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="publish" target="s3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="p3" value="create component version" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1F5AA6;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.8;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="publish" target="gg">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset"/>
+            <Array as="points">
+              <mxPoint x="590" y="215"/>
+              <mxPoint x="759.5" y="215"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p4" value="revise deployment" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1F5AA6;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.833;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="deploy" target="gg">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="58" y="0" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p5" value="image pull (Docker application&lt;br&gt;manager + Token exchange service)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1F5AA6;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.1167;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="ecr" target="docker">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="105" y="0" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p6" value="artifact download (config.json, docker-compose.yml)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1F5AA6;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.15;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="s3" target="nucleus">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-10" y="-10" as="offset"/>
+            <Array as="points">
+              <mxPoint x="439" y="445"/>
+              <mxPoint x="736" y="445"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p7" value="deployment" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#1F5AA6;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.33;entryY=0;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="gg" target="nucleus">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="42" y="50" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c1" value="publish command" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#E65100;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="control" target="iotcore">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="c2" value="control messages" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#E65100;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.3;exitY=1;exitDx=0;exitDy=0;entryX=0.65;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="iotcore" target="nucleus">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset"/>
+            <Array as="points">
+              <mxPoint x="1103" y="462"/>
+              <mxPoint x="856" y="462"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c3" value="status: online + acks" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#E65100;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.85;exitY=0;exitDx=0;exitDy=0;entryX=0.7;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="nucleus" target="iotcore">
+          <mxGeometry relative="1" as="geometry" x="0.6">
+            <mxPoint x="72" y="0" as="offset"/>
+            <Array as="points">
+              <mxPoint x="904" y="480"/>
+              <mxPoint x="1135" y="480"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c4" value="IPC control" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#E65100;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0;exitY=0.6;exitDx=0;exitDy=0;entryX=1;entryY=0.143;entryDx=0;entryDy=0;" edge="1" parent="1" source="nucleus" target="docker">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c5" value="IPC status / ack" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#E65100;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=1;exitY=0.321;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;" edge="1" parent="1" source="docker" target="nucleus">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d1" value="connects to opc.tcp://localhost:4840/simulator/ (OPC UA client &amp;rarr; server)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2E7D32;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.679;entryDx=0;entryDy=0;" edge="1" parent="1" source="collector" target="docker">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d2" value="tag values (OPC UA subscription, 1 s updates)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2E7D32;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=1;exitY=0.857;exitDx=0;exitDy=0;entryX=0;entryY=0.667;entryDx=0;entryDy=0;" edge="1" parent="1" source="docker" target="collector">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="10" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d3" value="MQTT" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2E7D32;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="collector" target="emqx">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-12" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d4" value="MQTT" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2E7D32;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="emqx" target="publisher">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="-12" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="d5" value="BatchPutAssetPropertyValue&lt;br&gt;by alias /opcua-sim/&amp;lt;device&amp;gt;/&amp;lt;tag&amp;gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2E7D32;fontColor=#232F3E;fontSize=11;labelBackgroundColor=#FFFFFF;endArrow=block;endFill=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="publisher" target="sitewise">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="0" y="20" as="offset"/>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

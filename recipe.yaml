@@ -1,0 +1,77 @@
+RecipeFormatVersion: '2020-01-25'
+ComponentName: COMPONENT_NAME
+ComponentVersion: COMPONENT_VERSION
+ComponentDescription: >-
+  Sample code for demonstration and educational use only; not intended for
+  production. Generic OPC UA data source simulator that runs as a Docker
+  container generating configurable synthetic sensor data with realistic
+  patterns. Supports MQTT control commands from AWS IoT Core through the
+  Greengrass IPC MQTT proxy for injecting anomalies, pausing, and resuming.
+ComponentPublisher: COMPONENT_AUTHOR
+ComponentConfiguration:
+  DefaultConfiguration:
+    # + is an MQTT single-level wildcard (nucleus >= 2.6.0). To restrict to this
+    # core only, use simulator/{iot:thingName}/... and set the Nucleus
+    # interpolateComponentConfiguration option to true.
+    accessControl:
+      aws.greengrass.ipc.mqttproxy:
+        com.amazon.samples.OpcUaDataSim:mqttproxy:1:
+          policyDescription: Allows publishing simulator status/acks to IoT Core
+          operations:
+          - "aws.greengrass#PublishToIoTCore"
+          resources:
+          - "simulator/+/status"
+        com.amazon.samples.OpcUaDataSim:mqttproxy:2:
+          policyDescription: Allows subscribing to simulator control commands from IoT Core
+          operations:
+          - "aws.greengrass#SubscribeToIoTCore"
+          resources:
+          - "simulator/+/control"
+ComponentDependencies:
+  aws.greengrass.DockerApplicationManager:
+    VersionRequirement: '>=2.0.0'
+    DependencyType: HARD
+  aws.greengrass.TokenExchangeService:
+    VersionRequirement: '>=2.0.0'
+    DependencyType: HARD
+  aws.greengrass.Nucleus:
+    VersionRequirement: '>=2.12.0'
+    DependencyType: SOFT
+Manifests:
+- Platform:
+    os: linux
+  # docker compose (v2 plugin) is preferred; the standalone docker-compose v2
+  # binary is the fallback. docker-compose v1 (Python) is end-of-life and
+  # untested. The Run step runs compose in the foreground so Greengrass owns the
+  # container lifecycle and sees crashes.
+  Lifecycle:
+    Install:
+      RequiresPrivilege: true
+      Script: |-
+        echo Installing the component artifacts
+        cp -R {artifacts:decompressedPath}/opcua-data-sim/* .
+    Run:
+      RequiresPrivilege: true
+      Script: |-
+        echo Starting the OPC UA simulator
+        if docker compose version >/dev/null 2>&1; then COMPOSE="docker compose"; else COMPOSE="docker-compose"; fi
+        export AWS_IOT_THING_NAME="{iot:thingName}"
+        export SVCUID AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT
+        exec $COMPOSE up --exit-code-from simulator
+    Shutdown:
+      RequiresPrivilege: true
+      Script: |-
+        if docker compose version >/dev/null 2>&1; then COMPOSE="docker compose"; else COMPOSE="docker-compose"; fi
+        $COMPOSE down
+    Recover:
+      RequiresPrivilege: true
+      Script: |-
+        if docker compose version >/dev/null 2>&1; then COMPOSE="docker compose"; else COMPOSE="docker-compose"; fi
+        $COMPOSE down
+  Artifacts:
+  - Uri: docker:$DOCKER_IMAGE
+  - Uri: s3://BUCKET_NAME/COMPONENT_NAME/COMPONENT_VERSION/opcua-data-sim.zip
+    Unarchive: ZIP
+    Permission:
+      Read: ALL
+Lifecycle: {}

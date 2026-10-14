@@ -1,0 +1,64 @@
+Third-Party Licenses
+====================
+
+This sample depends on the third-party packages listed below. Each is the
+property of its respective copyright holder(s) and is provided under its own
+license. These packages are not distributed as part of this repository; they
+are retrieved from their upstream sources (for example, via pip) when you build
+the container image or set up a development environment.
+
+Transitive dependencies pulled in by these packages are governed by their own
+licenses; the exact versions are recorded in the hashed lock files
+docker/requirements.txt and requirements-dev.txt.
+
+------------------------------------------------------------------------------
+Runtime dependencies (installed into the simulator container image)
+------------------------------------------------------------------------------
+
+asyncua (opcua-asyncio)
+  Purpose:  Python asynchronous OPC UA server implementation
+  Homepage: https://github.com/FreeOpcUa/opcua-asyncio
+  License:  GNU Lesser General Public License v3.0 or later (LGPL-3.0-or-later)
+  Text:     https://www.gnu.org/licenses/lgpl-3.0.txt
+  Notes:    Used unmodified as an installed package. It is dynamically imported
+            at runtime and is neither modified nor statically linked by this
+            project.
+
+awsiotsdk (AWS IoT Device SDK v2 for Python)
+  Purpose:  Greengrass IPC client used for MQTT control through the Nucleus
+  Homepage: https://github.com/aws/aws-iot-device-sdk-python-v2
+  License:  Apache License 2.0
+  Text:     https://www.apache.org/licenses/LICENSE-2.0
+  Notes:    Used unmodified as an installed package.
+
+awscrt (AWS Common Runtime Python bindings)
+  Purpose:  Native runtime required by awsiotsdk
+  Homepage: https://github.com/awslabs/aws-crt-python
+  License:  Apache License 2.0
+  Text:     https://www.apache.org/licenses/LICENSE-2.0
+  Notes:    Used unmodified as an installed package.
+
+------------------------------------------------------------------------------
+Developer / build-time dependencies (not part of the deployed artifacts;
+used only on the developer machine — see requirements.txt)
+------------------------------------------------------------------------------
+
+  boto3          Apache License 2.0        https://github.com/boto/boto3
+  PyYAML         MIT License               https://github.com/yaml/pyyaml
+  pylint         GNU GPL v2.0              https://github.com/pylint-dev/pylint
+  pytest         MIT License               https://github.com/pytest-dev/pytest
+  pytest-cov     MIT License               https://github.com/pytest-dev/pytest-cov
+  pytest-mock    MIT License               https://github.com/pytest-dev/pytest-mock
+
+------------------------------------------------------------------------------
+Note on LGPL-3.0 (asyncua)
+------------------------------------------------------------------------------
+
+This sample's own code is licensed under MIT-0 (see LICENSE). asyncua is
+licensed under LGPL-3.0-or-later, a different license. This sample uses asyncua
+as an unmodified, dynamically imported dependency installed via pip inside the
+Docker container; it does not modify asyncua or link it statically, and it does
+not redistribute asyncua's source or binaries within this repository. If you
+fork, redistribute, or otherwise repackage this sample (for example, by
+publishing the built container image), review the LGPL-3.0 terms for your
+specific distribution scenario.
