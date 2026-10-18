@@ -1,0 +1,104 @@
+RecipeFormatVersion: '2020-01-25'
+ComponentName: COMPONENT_NAME
+ComponentVersion: COMPONENT_VERSION
+ComponentDescription: >-
+  Sample code for demonstration and educational use only; not intended for
+  production. Generic OPC UA data source simulator that runs as a Docker
+  container generating configurable synthetic sensor data with realistic
+  patterns. Supports MQTT control commands from AWS IoT Core through the
+  Greengrass IPC MQTT proxy for injecting anomalies, pausing, and resuming.
+ComponentPublisher: COMPONENT_AUTHOR
+ComponentConfiguration:
+  DefaultConfiguration:
+    # Devices and tags. libs/build_component.py replaces the placeholder with the
+    # contents of artifacts/config.json. A deployment can replace this value
+    # (reset /simulatorConfig, then merge a new simulatorConfig); the simulator
+    # applies it live. Reading its own configuration needs no accessControl.
+    simulatorConfig: $SIMULATOR_CONFIG
+    # Host address that TCP 4840 is published on. The default keeps the
+    # unauthenticated OPC UA endpoint reachable only from this core (enough for
+    # SiteWise Edge on the same core). Set an IPv4 address of this host, or
+    # 0.0.0.0 for all interfaces, only for OPC UA clients on other hosts, and
+    # restrict TCP 4840 to them (see Separate cores in the README). The value is
+    # read when the container starts: restart the component after changing it.
+    publishAddress: "127.0.0.1"
+    # + is an MQTT single-level wildcard (nucleus >= 2.6.0). To restrict to this
+    # core only, use simulator/{iot:thingName}/... and set the Nucleus
+    # interpolateComponentConfiguration option to true.
+    accessControl:
+      aws.greengrass.ipc.mqttproxy:
+        com.amazon.samples.OpcUaDataSim:mqttproxy:1:
+          policyDescription: Allows publishing simulator status/acks to IoT Core
+          operations:
+          - "aws.greengrass#PublishToIoTCore"
+          resources:
+          - "simulator/+/status"
+        com.amazon.samples.OpcUaDataSim:mqttproxy:2:
+          policyDescription: Allows subscribing to simulator control commands from IoT Core
+          operations:
+          - "aws.greengrass#SubscribeToIoTCore"
+          resources:
+          - "simulator/+/control"
+ComponentDependencies:
+  aws.greengrass.DockerApplicationManager:
+    VersionRequirement: '>=2.0.0'
+    DependencyType: HARD
+  aws.greengrass.TokenExchangeService:
+    VersionRequirement: '>=2.0.0'
+    DependencyType: HARD
+  aws.greengrass.Nucleus:
+    VersionRequirement: '>=2.12.0'
+    DependencyType: SOFT
+Manifests:
+- Platform:
+    os: linux
+  # Only the docker CLI is needed (no Compose). The Run step runs the container
+  # in the foreground (no -d) so Greengrass owns its lifecycle and sees crashes.
+  # config.json is bind-mounted read-only straight from the unarchived artifact;
+  # the simulator uses it only when the simulatorConfig configuration is unusable.
+  # SVCUID and the IPC socket path come from the Nucleus; the socket is mounted at
+  # the same path inside the container so the forwarded env var stays valid (the
+  # Nucleus makes it world read/write, so the non-root container user can connect).
+  # TCP 4840 is published on publishAddress only (default 127.0.0.1, this core).
+  # The value is checked to be an IPv4 address before it reaches docker run.
+  # The image needs no Linux capabilities and writes only to the tmpfs /tmp.
+  # The scripts avoid shell brace expansions because Greengrass treats
+  # {namespace:key} text in lifecycle scripts as recipe variables.
+  Lifecycle:
+    Run:
+      RequiresPrivilege: true
+      Script: |-
+        echo Starting the OPC UA simulator
+        if [ -z "$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT" ]; then AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT=/greengrass/v2/ipc.socket; fi
+        export SVCUID AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT
+        PUBLISH_ADDRESS="{configuration:/publishAddress}"
+        case "$PUBLISH_ADDRESS" in
+          ""|*[!0-9.]*) echo "Invalid publishAddress '$PUBLISH_ADDRESS': expected an IPv4 address such as 127.0.0.1" >&2; exit 1 ;;
+        esac
+        docker rm -f opcua-data-sim >/dev/null 2>&1 || true
+        exec docker run --rm --name opcua-data-sim -p "$PUBLISH_ADDRESS:4840:4840" \
+          -e AWS_IOT_THING_NAME="{iot:thingName}" \
+          -e SVCUID \
+          -e AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT \
+          -v "{artifacts:decompressedPath}/opcua-data-sim/config.json:/app/config.json:ro" \
+          -v "$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT:$AWS_GG_NUCLEUS_DOMAIN_SOCKET_FILEPATH_FOR_COMPONENT" \
+          --cap-drop ALL \
+          --security-opt no-new-privileges:true \
+          --read-only \
+          --tmpfs /tmp \
+          $DOCKER_IMAGE /app/config.json
+    Shutdown:
+      RequiresPrivilege: true
+      Script: |-
+        docker stop opcua-data-sim >/dev/null 2>&1 || true
+    Recover:
+      RequiresPrivilege: true
+      Script: |-
+        docker rm -f opcua-data-sim >/dev/null 2>&1 || true
+  Artifacts:
+  - Uri: docker:$DOCKER_IMAGE
+  - Uri: s3://BUCKET_NAME/COMPONENT_NAME/COMPONENT_VERSION/opcua-data-sim.zip
+    Unarchive: ZIP
+    Permission:
+      Read: ALL
+Lifecycle: {}

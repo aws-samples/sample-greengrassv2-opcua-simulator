@@ -1,0 +1,8 @@
+{
+  "componentName": "com.amazon.samples.OpcUaDataSim",
+  "version": "1.0.0",
+  "author": "Amazon",
+  "publishBucketPrefix": "opcua-data-sim-samples",
+  "region": "us-east-1",
+  "image": "<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/opcua-data-sim:latest"
+}
