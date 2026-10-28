@@ -3,7 +3,7 @@
 # Edit this file, then regenerate the hashed lock file from the repo root with:
 #   uv pip compile --universal --generate-hashes --python-version 3.10 requirements-dev.in -o requirements-dev.txt
 -c docker/requirements.txt
-boto3==1.43.114
+boto3==1.43.118
 PyYAML==6.0.3
 pylint==4.1.3
 pytest==9.1.1
